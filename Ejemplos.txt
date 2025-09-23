@@ -1,0 +1,79 @@
+
+porfavor vacio principalsito() {
+    podriasImprimir("Hola mundo") :)
+}
+
+=============================
+
+123.123.123
+
+=============================
+
+podriasCrear enterito numero1 :)
+podriasCrear realito precio :)
+porfavor numero1 = 42 :)
+porfavor precio = 19.99 :)
+
+=============================
+
+constantito enterito MAX_USUARIOS = 100 :)
+
+=============================
+
+siCumple (numero1 > 0) {
+    podriasImprimir("Numero positivo") :)
+} peroSiCumple (numero1 < 0) {
+    podriasImprimir("Numero negativo") :)
+} casoContrario {
+    podriasImprimir("Numero es cero") :)
+}
+
+=============================
+
+siPersiste (contador < 5) {
+    podriasImprimir("Contador: " + contador) :)
+    porfavor contador = contador + 1 :)
+}
+
+=============================
+
+enCasoSea (opcion) {
+    1: podriasImprimir("Opcion uno") :)
+       parar :)
+    2: podriasImprimir("Opcion dos") :)
+       parar :)
+    3: podriasImprimir("Opcion tres") :)
+       parar :)
+    oSino: podriasImprimir("Opcion no valida") :)
+}
+
+=============================
+
+porfavor enterito sumar(enterito a, enterito b) {
+    retorna a + b :)
+}
+
+porfavor resultado = aclama sumar(10, 20) :)
+
+=============================
+
+clasesita Persona {
+    podriasCrear cadenita nombre :)
+    podriasCrear enterito edad :)
+
+    porfavor metodillo vacio saludar() {
+        podriasImprimir("Hola, soy " + nombre) :)
+    }
+
+    porfavor metodillo enterito obtenerEdad() {
+        retorna edad :)
+    }
+}
+
+=============================
+
+Persona persona1 = clona Persona() :)
+
+=============================
+
+podriasCrear enterito[5] numeros :)

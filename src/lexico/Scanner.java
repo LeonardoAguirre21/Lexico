@@ -36,6 +36,10 @@ class Scanner {
 		return source.charAt(current++);
 	}
 
+	private char retreat(int length){
+		return source.charAt(current=current-length);
+	}
+
 	private void addToken(TokenType type) {
 		addToken(type, null);
 	}
@@ -284,10 +288,10 @@ class Scanner {
 		while (isDigit(peek()))
 			advance();
 
-		
+
 		if (peek() == '.' && isDigit(peekNext())) {
 			isReal = true;
-			advance(); 
+			advance();
 
 			while (isDigit(peek()))
 				advance();
@@ -303,17 +307,13 @@ class Scanner {
 	}
 
 	private void string() {
-	    while (peek() != '"' && !isAtEnd()) {
+	    while (peek() != '"') {
 			if (peek() == '\n') {
-				addToken(TokenType.ERROR, "String no puede ser estar en 2 lineas");
+				retreat(source.substring(start, current - 1).length());
+				addToken(TokenType.ERROR, "String con mala sintaxis");
 				return;
 			}
 			advance();
-	    }
-
-	    if (isAtEnd()) {
-			addToken(TokenType.ERROR, "Unterminated string");
-	      return;
 	    }
 
 	    // La comilla de cierre
