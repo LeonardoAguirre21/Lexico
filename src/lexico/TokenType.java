@@ -10,22 +10,22 @@ public enum TokenType {
     MENOS(55),           // -
     MENOR(56),            // <
     MAYOR(57),         // >
-    SLASH(58),           // /
-    MODULO(59),        // %
-    AND_AND(60),        // &&
-    OR_OR(61),          // ||
+    DIVISION(58),           // /
+    MOD(59),        // %
+    AND(60),        // &&
+    OR(61),          // ||
     COMA(62),          // ,
-    LEFT_PAREN(63),     // (
-    RIGHT_PAREN(64),    // )
-    LEFT_BRACE(65),     // {
-    RIGHT_BRACE(66),    // }
-    EQUAL(67),          // =
-    EQUAL_EQUAL(68),    // ==
-    BANG_EQUAL(69),     // !=
+    PAREN_IZQ(63),     // (
+    PAREN_DER(64),    // )
+    LLAVE_IZQ(65),     // {
+    LLAVE_DER(66),    // }
+    IGUAL(67),          // =
+    EQUIVALE(68),    // ==
+    DIFERENTE(69),     // !=
     MENOR_QUE(70),     // <=
     MAYOR_QUE(71),  // >=
-    LEFT_BRACKET(72),   // [
-    RIGHT_BRACKET(73),  // ]
+    CORCHETE_IZQ(72),   // [
+    CORCHETE_DER(73),  // ]
 
     // --- Literales ---
     IDENTIFICADOR(1000),
@@ -63,11 +63,11 @@ public enum TokenType {
     CADENITA(33),
     NULITO(34),
     VACIO(35),
+    CONSTANTITO(36),
+    CLASESITA(37),
 
    
-    ERROR(666),
-    
-    EOF(999);
+    ERROR(666);
 
     private final int code;
 

@@ -25,7 +25,6 @@ class Scanner {
 			scanToken();
 		}
 
-		tokens.add(new Token(EOF, "", null, line));
 		return tokens;
 	}
 
@@ -50,22 +49,22 @@ class Scanner {
 		char c = advance();
 		switch (c) {
 		case '(':
-			addToken(LEFT_PAREN);
+			addToken(PAREN_IZQ);
 			break;
 		case ')':
-			addToken(RIGHT_PAREN);
+			addToken(PAREN_DER);
 			break;
 		case '{':
-			addToken(LEFT_BRACE);
+			addToken(LLAVE_IZQ);
 			break;
 		case '}':
-			addToken(RIGHT_BRACE);
+			addToken(LLAVE_DER);
 			break;
 		case '[':
-			addToken(LEFT_BRACKET);
+			addToken(CORCHETE_IZQ);
 			break;
 		case ']':
-			addToken(RIGHT_BRACKET);
+			addToken(CORCHETE_DER);
 			break;
 		case ',':
 			addToken(COMA);
@@ -83,7 +82,7 @@ class Scanner {
 			addToken(ASTERISCO);
 			break;
 		case '%':
-			addToken(MODULO);
+			addToken(MOD);
 			break;
 		case '\'':
 			character();
@@ -99,7 +98,7 @@ class Scanner {
 
 		case '!':
 			if (match('=')) {
-				addToken(BANG_EQUAL); // !=
+				addToken(DIFERENTE); // !=
 			} else {
 			    addToken(TokenType.ERROR, "Unexpected '" + c + "'");
 			}
@@ -107,9 +106,9 @@ class Scanner {
 
 		case '=':
 			if (match('=')) {
-				addToken(EQUAL_EQUAL); // ==
+				addToken(EQUIVALE); // ==
 			} else {
-				addToken(EQUAL); // =
+				addToken(IGUAL); // =
 			}
 			break;
 
@@ -123,7 +122,7 @@ class Scanner {
 
 		case '&':
 		    if (match('&')) {
-		        addToken(AND_AND);
+		        addToken(AND);
 		    } else {
 		    	addToken(TokenType.ERROR, "Unexpected '" + c + "'");
 		    }
@@ -131,7 +130,7 @@ class Scanner {
 
 		case '|':
 			if (match('|')) {
-				addToken(OR_OR); // ||
+				addToken(OR); // ||
 			} else {
 				addToken(TokenType.ERROR, "Unexpected '" + c + "'");
 			}
@@ -143,7 +142,7 @@ class Scanner {
 				while (peek() != '\n' && !isAtEnd())
 					advance();
 			} else {
-				addToken(SLASH);
+				addToken(DIVISION);
 			}
 			break;
 
@@ -181,50 +180,102 @@ class Scanner {
 			return false;
 		String text = source.substring(current - 1, current - 1 + length);
 		if (text.equals(expected)) {
-			current = current - 1 + length; // avanzamos hasta el final de la palabra
+			current = current - 1 + length; 
 			return true;
 		}
 		return false;
 	}
 
 	private void character() {
-		// Si llegamos al final sin cerrar la comilla
-		if (isAtEnd()) {
-			Lox.error(line, "Unterminated character literal.");
-			return;
-		}
+	    // Si llegamos al final sin cerrar la comilla simple
+	    if (isAtEnd()) {
+	    	addToken(TokenType.ERROR, "Unexpected '" +source.substring(start, current) + "'");
+	        return;
+	    }
 
-		char value = advance(); // el caracter dentro de las comillas
+	    // Tomar el caracter dentro de las comillas
+	    char value = advance();
 
-		// El carácter debe cerrarse con otra comilla simple
-		if (peek() != '\'') {
-			Lox.error(line, "Carecter debe contener solo un carecter.");
-			return;
-		}
-		advance(); // consumir la comilla de cierre
+	    // Verificar que haya una comilla simple de cierre
+	    if (peek() != '\'') {
+	        // Comilla inicial sola o literal inválido → solo marcar la comilla inicial como error
+	    	addToken(TokenType.ERROR, "Unexpected '" +source.substring(start, current) + "'");
+	        return;
+	    }
 
-		addToken(TokenType.CHAR, value);
+	    // Consumir la comilla de cierre
+	    advance();
+
+	    // Agregar token CHAR válido
+	    addToken(TokenType.CHAR, value);
 	}
 
 	private void identifier() {
-		while (isAlphaNumeric(peek()))
+		while (isAlphaNumeric(peek()) || peek() == '_')
 			advance();
 
 		String text = source.substring(start, current);
 
-		// Verificar si es palabra reservada
 		TokenType type = keywords.get(text);
 		if (type != null) {
 			addToken(type);
 			return;
 		}
 
-		// Si no es reservada, distinguir mayúsculas
-		if (text.equals(text.toUpperCase())) {
+		if (!isValidIdentifier(text)) {
+			addToken(TokenType.ERROR, "Invalid identifier '" + text + "'");
+			return;
+		}
+
+		if (isUppercaseIdentifier(text)) {
 			addToken(TokenType.IDENTIFICADOR_MAYUSCULA);
 		} else {
 			addToken(TokenType.IDENTIFICADOR);
 		}
+	}
+
+	private boolean isValidIdentifier(String identifier) {
+		if (identifier.isEmpty()) {
+			return false;
+		}
+
+		char firstChar = identifier.charAt(0);
+		if (!isAlpha(firstChar)) {
+			return false;
+		}
+
+		for (int i = 1; i < identifier.length(); i++) {
+			char c = identifier.charAt(i);
+			if (!isAlpha(c) && !isDigit(c) && c != '_') {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private boolean isUppercaseIdentifier(String identifier) {
+		if (identifier.isEmpty()) {
+			return false;
+		}
+
+		// El primer carácter debe ser una letra mayúscula
+		char firstChar = identifier.charAt(0);
+		if (firstChar < 'A' || firstChar > 'Z') {
+			return false;
+		}
+
+		for (int i = 1; i < identifier.length(); i++) {
+			char c = identifier.charAt(i);
+			if (c >= 'a' && c <= 'z') {
+				return false;
+			}
+			if (!((c >= 'A' && c <= 'Z') || isDigit(c) || c == '_')) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private void number() {
@@ -233,10 +284,10 @@ class Scanner {
 		while (isDigit(peek()))
 			advance();
 
-		// Parte fraccionaria
+		
 		if (peek() == '.' && isDigit(peekNext())) {
 			isReal = true;
-			advance(); // consumir '.'
+			advance(); 
 
 			while (isDigit(peek()))
 				advance();
@@ -252,24 +303,27 @@ class Scanner {
 	}
 
 	private void string() {
-		while (peek() != '"' && !isAtEnd()) {
-			if (peek() == '\n')
-				line++;
+	    while (peek() != '"' && !isAtEnd()) {
+			if (peek() == '\n') {
+				addToken(TokenType.ERROR, "String no puede ser estar en 2 lineas");
+				return;
+			}
 			advance();
-		}
+	    }
 
-		if (isAtEnd()) {
-		    addToken(TokenType.ERROR, "Unterminated string");
-		    return;
-		}
+	    if (isAtEnd()) {
+			addToken(TokenType.ERROR, "Unterminated string");
+	      return;
+	    }
 
-		// The closing ".
-		advance();
+	    // La comilla de cierre
+	    advance();
 
-		// Trim the surrounding quotes.
-		String value = source.substring(start + 1, current - 1);
-		addToken(STRING, value);
-	}
+	    // Trim the surrounding quotes.
+	    String value = source.substring(start + 1, current - 1);
+	    addToken(STRING, value);
+	  }
+	
 
 	private boolean match(char expected) {
 		if (isAtEnd())
@@ -334,6 +388,8 @@ class Scanner {
 		keywords.put("cadenita", TokenType.CADENITA);
 		keywords.put("nulito", TokenType.NULITO);
 		keywords.put("vacio", TokenType.VACIO);
+		keywords.put("constantito", TokenType.CONSTANTITO);
+		keywords.put("clasesita", TokenType.CLASESITA);
 		keywords.put("true", BOOLEAN);
 		keywords.put("false", BOOLEAN);
 	}

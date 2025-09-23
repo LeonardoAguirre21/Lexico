@@ -33,14 +33,31 @@ public class Lox {
 	private static void runPrompt() throws IOException {
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input);
+		StringBuilder code = new StringBuilder();
+
+		System.out.println("-- Escriba su codigo fuente Kind++ -- Termine de escribir poniendo un '#' en una linea sola");
 
 		for (;;) {
-			System.out.print("> ");
 			String line = reader.readLine();
-			if (line == null)
+
+			if (line == null) {
 				break;
-			run(line);
-			hadError = false;
+			}
+
+			if (line.trim().equals("#")) {
+				if (code.length() > 0) {
+					System.out.println("=========================================");
+					System.out.println("             Token             | Lexema");
+					System.out.println("=========================================");
+					run(code.toString());
+				} else {
+					System.out.println("No hay codigo que analizar");
+				}
+				break;
+			}
+
+			// Agregar la línea al código acumulado
+			code.append(line).append("\n");
 		}
 	}
 
@@ -52,11 +69,7 @@ public class Lox {
 			System.out.println(token);
 		}
 	}
-
-	static void error(int line, String message) {
-		report(line, "", message);
-	}
-
+	
 	private static void report(int line, String where, String message) {
 		System.err.println("[line " + line + "] Error" + where + ": " + message);
 		hadError = true;

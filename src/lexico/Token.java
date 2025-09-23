@@ -15,7 +15,7 @@ public class Token {
 
     @Override
     public String toString() {
-        // Formato: columna fija (alineado)
+     
         return String.format("%-20s %-15s %-10s",
                 type.name() + " (" + type.getCode() + ")",  // Tipo y código
                 lexeme,                                    // Lexema
